@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+ 
+  --color-app-bg: #0a0a0d;
+  --color-card-bg: #111114;
+  --color-card-border: #26262b;
+  --color-field-bg: #0a0a0d;
+  --color-field-border: #2c2c32;
+  --color-muted: #8a8a92;
+  --color-accent-amber: #d99a4e;
+}
+ 
+body {
+  margin: 0;
+  font-family: var(--font-mono);
+  background: var(--color-app-bg);
+  color: #e4e4e7;
+}
+ 
