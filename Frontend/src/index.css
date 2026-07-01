@@ -1,21 +1,53 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
- 
-  --color-app-bg: #0a0a0d;
-  --color-card-bg: #111114;
-  --color-card-border: #26262b;
-  --color-field-bg: #0a0a0d;
-  --color-field-border: #2c2c32;
-  --color-muted: #8a8a92;
-  --color-accent-amber: #d99a4e;
 }
- 
+
+:root {
+  --bg-app: #f4f4f5;
+  --bg-card: #ffffff;
+  --border-card: #e4e4e7;
+  --bg-field: #f9f9fa;
+  --border-field: #d4d4d8;
+  --text-primary: #18181b;
+  --text-muted: #6b6b73;
+  --btn-bg: #18181b;
+  --btn-text: #fafafa;
+  --btn-hover: #27272a;
+  --bubble-own: #18181b;
+  --bubble-own-text: #fafafa;
+  --bubble-other: #ececef;
+  --bubble-other-text: #18181b;
+}
+
+.dark {
+  --bg-app: #0a0a0d;
+  --bg-card: #111114;
+  --border-card: #26262b;
+  --bg-field: #0a0a0d;
+  --border-field: #2c2c32;
+  --text-primary: #f4f4f5;
+  --text-muted: #8a8a92;
+  --btn-bg: #f4f4f5;
+  --btn-text: #18181b;
+  --btn-hover: #ffffff;
+  --bubble-own: #f4f4f5;
+  --bubble-own-text: #18181b;
+  --bubble-other: #1c1c21;
+  --bubble-other-text: #f4f4f5;
+}
+
 body {
   margin: 0;
   font-family: var(--font-mono);
-  background: var(--color-app-bg);
-  color: #e4e4e7;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
- 
+
+* {
+  scrollbar-width: thin;
+}

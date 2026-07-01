@@ -36,3 +36,7 @@ export interface RoomState {
     messages: ChatMessage[];
     emptyTimer: ReturnType<typeof setTimeout> | null;
 }
+
+export type FeedItem =
+  | { kind: 'message'; data: ChatMessage }
+  | { kind: 'system'; text: string; ts: number };
