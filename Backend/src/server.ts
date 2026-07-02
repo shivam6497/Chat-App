@@ -9,7 +9,7 @@ const httpServer = createServer(app);
 
 const io = new Server<ClientToServerEvent, ServerToClientEvent>(httpServer, {
   cors: {
-    origin: ["https://chat-app-phi-beige-20.vercel.app/"],
+    origin: ["https://chat-app-phi-beige-20.vercel.app"],
   },
 });
 
