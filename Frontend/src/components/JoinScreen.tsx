@@ -43,13 +43,13 @@ export default function JoinScreen({ onCreateRoom, onJoinRoom, connectionError }
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4"
+      className="min-h-screen flex items-center justify-center px-4 py-8"
       style={{ backgroundColor: 'var(--bg-app)' }}
     >
       <ThemeToggle />
 
       <div
-        className="w-full max-w-[600px] rounded-xl p-8 border"
+        className="w-full max-w-[600px] rounded-xl p-5 sm:p-8 border"
         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-card)' }}
       >
         <div className="flex items-center gap-2 mb-2">
@@ -65,7 +65,7 @@ export default function JoinScreen({ onCreateRoom, onJoinRoom, connectionError }
         <button
           type="button"
           onClick={handleCreateRoom}
-          className="w-full font-semibold rounded-md py-3 mb-4 transition-colors cursor-pointer"
+          className="w-full font-semibold rounded-md py-3 mb-4 transition-colors"
           style={{ backgroundColor: 'var(--btn-bg)', color: 'var(--btn-text)' }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-hover)')}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-bg)')}
@@ -78,24 +78,25 @@ export default function JoinScreen({ onCreateRoom, onJoinRoom, connectionError }
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter your name"
-          className="w-full rounded-md px-4 py-3 mb-4 outline-none border transition-colors cursor-pointer"
+          className="w-full rounded-md px-4 py-3 mb-4 outline-none border transition-colors"
           style={inputStyle}
         />
 
-        <div className="flex gap-3">
+        {/* On mobile: stacked vertically. On sm+: side by side */}
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={roomCode}
             onChange={(e) => setRoomCode(e.target.value)}
             placeholder="Enter Room Code"
             onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
-            className="flex-1 rounded-md px-4 py-3 outline-none border transition-colors cursor-pointer"
+            className="flex-1 rounded-md px-4 py-3 outline-none border transition-colors"
             style={inputStyle}
           />
           <button
             type="button"
             onClick={handleJoinRoom}
-            className="font-semibold rounded-md px-6 transition-colors whitespace-nowrap cursor-pointer"
+            className="font-semibold rounded-md px-6 py-3 transition-colors whitespace-nowrap sm:w-auto w-full"
             style={{ backgroundColor: 'var(--btn-bg)', color: 'var(--btn-text)' }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-hover)')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-bg)')}
