@@ -9,7 +9,7 @@ const httpServer = createServer(app);
 
 const io = new Server<ClientToServerEvent, ServerToClientEvent>(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173"],
   },
 });
 
