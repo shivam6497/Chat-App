@@ -65,7 +65,7 @@ export default function JoinScreen({ onCreateRoom, onJoinRoom, connectionError }
         <button
           type="button"
           onClick={handleCreateRoom}
-          className="w-full font-semibold rounded-md py-3 mb-4 transition-colors"
+          className="w-full font-semibold rounded-md py-3 mb-4 transition-colors cursor-pointer"
           style={{ backgroundColor: 'var(--btn-bg)', color: 'var(--btn-text)' }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-hover)')}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-bg)')}
@@ -96,7 +96,7 @@ export default function JoinScreen({ onCreateRoom, onJoinRoom, connectionError }
           <button
             type="button"
             onClick={handleJoinRoom}
-            className="font-semibold rounded-md px-6 py-3 transition-colors whitespace-nowrap sm:w-auto w-full"
+            className="font-semibold rounded-md px-6 py-3 transition-colors whitespace-nowrap sm:w-auto w-full cursor-pointer"
             style={{ backgroundColor: 'var(--btn-bg)', color: 'var(--btn-text)' }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-hover)')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--btn-bg)')}
