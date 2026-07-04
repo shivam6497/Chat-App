@@ -9,7 +9,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label="Toggle theme"
-      className="fixed top-6 right-6 w-9 h-9 flex items-center justify-center rounded-md border transition-colors"
+      className="fixed top-6 right-6 w-9 h-9 flex items-center justify-center rounded-md border transition-colors cursor-pointer"
       style={{
         borderColor: 'var(--border-card)',
         color: 'var(--text-primary)',
