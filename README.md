@@ -54,7 +54,7 @@ npm start
 
 ## Frontend
 
-The frontend is a Vite app. It currently connects to the deployed Socket.IO server configured in `Frontend/src/socket.ts`.
+The frontend is a Vite app. It currently connects to the deployed Socket.IO server configured in the `Frontend/src/socket.ts` file.
 
 ### Install
 
