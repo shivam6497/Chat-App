@@ -3,6 +3,8 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import { ServerToClientEvent, ClientToServerEvent, ChatMessage } from "./types";
 import { RoomManager } from "./roomManager.js";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { redisClient, redisAdapter } from "./redis.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -12,6 +14,8 @@ const io = new Server<ClientToServerEvent, ServerToClientEvent>(httpServer, {
     origin: ["https://chat-app-phi-beige-20.vercel.app"],
   },
 });
+
+io.adapter(createAdapter(redisClient, redisAdapter));
 
 const PORT = 8080;
 const roomManager = new RoomManager(io);
@@ -26,21 +30,21 @@ io.on("connection", (socket) => {
   let currentRoom: string | null = null;
   let username: string | null = null;
 
-  socket.on("join-room", ({ roomId, name }) => {
+  socket.on("join-room", async ({ roomId, name }) => {
     if (!roomId?.trim() || !name?.trim()) {
       socket.emit("error-message", "Invalid roomId or name");
       return;
     }
 
     if (currentRoom) {
-      handleLeaveRoom();
+      await handleLeaveRoom();
     }
 
     currentRoom = roomId.trim();
     username = name.trim();
 
     socket.join(currentRoom);
-    const { history } = roomManager.joinRoom(socket.id, currentRoom, username);
+    const { history } = await roomManager.joinRoom(socket.id, currentRoom, username);
 
     socket.emit("room-history", history as any);
     socket
@@ -49,10 +53,11 @@ io.on("connection", (socket) => {
     console.log(`Socket ${socket.id} joined room ${currentRoom}`);
   });
 
-  socket.on("chat-message", (text) => {
+  // @ts-ignore
+  socket.on("chat-message", async (text: string): Promise<void> => {
     if (!currentRoom || !username || !text.trim()) {
       socket.emit("error-message", "Invalid roomId or name");
-      return "error";
+      return;
     }
     const message: ChatMessage = {
       user: username,
@@ -60,15 +65,14 @@ io.on("connection", (socket) => {
       ts: Date.now(),
     };
 
-    roomManager.addMessage(currentRoom, message);
+    await roomManager.addMessage(currentRoom, message);
     io.to(currentRoom).emit("chat-message", message);
-    return "ok";
   });
 
-  function handleLeaveRoom(): void {
+  async function handleLeaveRoom(): Promise<void> {
     if(!currentRoom || !username) return;
 
-    roomManager.leaveRoom(socket.id, currentRoom, username);
+    await roomManager.leaveRoom(socket.id, currentRoom);
     socket.to(currentRoom).emit("system-message", `${username} left the room`);
     socket.leave(currentRoom);
 
@@ -78,9 +82,9 @@ io.on("connection", (socket) => {
 
   socket.on("leave-room", handleLeaveRoom);
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log(`Socket ${socket.id} disconnected`);
-    handleLeaveRoom();
+    await handleLeaveRoom();
   });
 });
 
