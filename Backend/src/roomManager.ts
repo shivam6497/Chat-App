@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { redisClient } from "./redis.js";
 import {
   RoomState,
   ServerToClientEvent,
@@ -6,90 +7,71 @@ import {
   ChatMessage,
 } from "./types";
 
-const ROOM_PERIOD = 15_000;
+const ROOM_TTL = 15;
 const MAX_HISTORY = 100;
 
 type AppServer = Server<ClientToServerEvent, ServerToClientEvent>;
 
-export class RoomManager {
-  private rooms = new Map<string, RoomState>();
+const keys = {
+  roomUsers: (roomId: string) => `room:${roomId}:users`,
+  roomMessages: (roomId: string) => `room:${roomId}:messages`,
+};
 
+export class RoomManager {
   constructor(private io: AppServer) {}
 
-  private getOrCreateRoom(roomId: string): RoomState {
-    let room = this.rooms.get(roomId);
 
-    if (!room) {
-      room = { users: new Map(), messages: [], emptyTimer: null };
-      this.rooms.set(roomId, room);
-    }
-    return room;
+  private async broadcastUserList(roomId: string): Promise<void> {
+    const users = await redisClient.hvals(keys.roomUsers(roomId));
+    this.io.to(roomId).emit("user-list", users);
   }
 
-  private broadcastUserList(roomId: string): void {
-    const room = this.rooms.get(roomId);
+  async joinRoom(
+    socketId: string,
+    roomId: string,
+    name: string
+  ): Promise<{ history: ChatMessage[] }> {
+    await redisClient.persist(keys.roomMessages(roomId));
+    await redisClient.persist(keys.roomUsers(roomId));
 
-    if (!room) return;
+    await redisClient.hset(keys.roomUsers(roomId), socketId, name);
+    await this.broadcastUserList(roomId);
 
-    this.io.to(roomId).emit("user-list", Array.from(room.users.values()));
+    const rawMessages = await redisClient.lrange(
+      keys.roomMessages(roomId),
+      0,
+      -1
+    );
+    const history = rawMessages.map((msg) => JSON.parse(msg) as ChatMessage);
+
+    return { history };
   }
 
-  private scheduleCleanUp(roomId: string): void {
-    const room = this.rooms.get(roomId);
+  async leaveRoom(
+    socketId: string,
+    roomId: string
+  ): Promise<void> {
+    await redisClient.hdel(keys.roomUsers(roomId), socketId);
+    await this.broadcastUserList(roomId);
 
-    if(!room) return;
-
-    if(room.emptyTimer) clearTimeout(room.emptyTimer);
-
-    room.emptyTimer = setTimeout(() => {
-      const r = this.rooms.get(roomId);
-      if(r && r.users.size === 0) {
-        this.rooms.delete(roomId);
-        console.log(`Room ${roomId} is empty, removing it`);
-      }
-    }, ROOM_PERIOD);
-  }
-
-  joinRoom(socketId: string,roomId: string, name: string): {
-    history: ChatMessage[];
-  } {
-    const room = this.getOrCreateRoom(roomId);
-
-    if(room.emptyTimer) {
-      clearTimeout(room.emptyTimer);
-      room.emptyTimer = null;
-    }
-
-    room.users.set(socketId, name);
-    this.broadcastUserList(roomId);
-
-    return { history: room.messages };
-  }
-
-  leaveRoom(socketId: string, roomId: string, name: string): void {
-    const room = this.rooms.get(roomId);
+    const userCount = await redisClient.hlen(keys.roomUsers(roomId));
     
-    if(!room) return;
-
-    room.users.delete(socketId);
-    this.broadcastUserList(roomId);
-
-    if(room.users.size === 0) {
-      this.scheduleCleanUp(roomId);
+    if(userCount === 0) {
+      await redisClient.expire(keys.roomUsers(roomId), ROOM_TTL);
+      await redisClient.expire(keys.roomMessages(roomId), ROOM_TTL);
+      console.log(`Room ${roomId} is now empty. Set TTL for users and messages.`);
     }
   }
 
-  addMessage(roomId: string, message: ChatMessage): void {
-    const room = this.rooms.get(roomId);
-    if(!room) return;
+   async addMessage(roomId: string, message: ChatMessage): Promise<void> {
+    const key = keys.roomMessages(roomId);
+    const serialized = JSON.stringify(message);
 
-    room.messages.push(message);
-    if(room.messages.length > MAX_HISTORY) {
-      room.messages.shift();
-    }
+    await redisClient.lpush(key, serialized);
+    await redisClient.ltrim(key, 0, MAX_HISTORY - 1);
   }
 
-  roomExists(roomId: string): boolean {
-    return this.rooms.has(roomId);
+  async roomExists(roomId: string): Promise<boolean> {
+    return await redisClient.exists(keys.roomUsers(roomId)) === 1;
   }
 }
