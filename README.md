@@ -1,93 +1,104 @@
 # Chat App
 
-A real-time chat application built with a TypeScript Socket.IO backend and a Vite + React frontend.
+A real-time chat application built with a TypeScript monorepo using Socket.IO, React, Vite, and Redis-backed room state.
 
-# Live Demo
+## Live Demo
 
-[https://chat-app-phi-beige-20.vercel.app](https://chat-app-phi-beige-20.vercel.app)
+- Frontend: https://chat-app-phi-beige-20.vercel.app
+- Backend: https://chat-app-w182.onrender.com
+
+## What it does
+
+- Create or join a chat room with a unique room code
+- Send messages in real time with other users in the same room
+- See join/leave system notifications
+- View room history and the current room member list
+- Switch between a light and dark theme
+
+## Tech Stack
+
+- Frontend: React, TypeScript, Vite, Socket.IO Client
+- Backend: Express, Socket.IO, TypeScript
+- Shared types: local workspace package
+- Data layer: Redis adapter for multi-instance room sharing
+- Tooling: Turbo for monorepo scripts
 
 ## Project Structure
 
-- `Backend/` - Express + Socket.IO server written in TypeScript
-- `Frontend/` - React client built with Vite, TypeScript, and Tailwind CSS
-
-## Features
-
-- Create or join a chat room with a short room code
-- Send real-time messages through Socket.IO
-- See system messages when users join or leave
-- View room history and the current user list
+- apps/backend - Socket.IO server and room management logic
+- apps/frontend - Vite + React client interface
+- packages/types - Shared TypeScript event and message definitions
 
 ## Requirements
 
-- Node.js 18 or newer
+- Node.js 18+
 - npm
-
-## Backend
-
-The backend runs on port `8080` and exposes a health check at `GET /health`.
-
-### Install
-
-```bash
-cd Backend
-npm install
-```
-
-### Development
-
-```bash
-npm run dev
-```
-
-### Build
-
-```bash
-npm run build
-```
-
-### Start
-
-```bash
-npm start
-```
-
-## Frontend
-
-The frontend is a Vite app. It currently connects to the deployed Socket.IO server configured in the `Frontend/src/socket.ts` file.
-
-### Install
-
-```bash
-cd Frontend
-npm install
-```
-
-### Development
-
-```bash
-npm run dev
-```
-
-### Build
-
-```bash
-npm run build
-```
-
-### Lint
-
-```bash
-npm run lint
-```
-
-## Local Development Notes
-
-- If you want to run the frontend against a local backend, update the socket server URL in `Frontend/src/socket.ts`.
-- The backend allows CORS from the deployed frontend URL listed in `Backend/src/server.ts`.
+- Redis instance (for the backend to connect to)
 
 ## Quick Start
 
-1. Start the backend from `Backend/`.
-2. Start the frontend from `Frontend/`.
-3. Open the frontend in your browser and create or join a room.
+1. Install dependencies from the repository root:
+
+```bash
+npm install
+```
+
+2. Create a backend environment file:
+
+```bash
+cp apps/backend/.env.example apps/backend/.env
+```
+
+If you do not already have an example file, create apps/backend/.env and add:
+
+```env
+REDIS_URL=redis://localhost:6379
+```
+
+3. Start the development servers:
+
+```bash
+npm run dev
+```
+
+This starts the frontend and backend together through Turbo.
+
+4. Open the frontend in your browser and create or join a room.
+
+## Available Scripts
+
+From the repository root:
+
+```bash
+npm run dev
+npm run build
+```
+
+From the backend app:
+
+```bash
+cd apps/backend
+npm run dev
+npm run build
+npm start
+```
+
+From the frontend app:
+
+```bash
+cd apps/frontend
+npm run dev
+npm run build
+npm run lint
+```
+
+## Development Notes
+
+- The frontend currently points to the deployed backend URL in apps/frontend/src/socket.ts.
+- To test against a local backend, update the server URL there.
+- The backend health check endpoint is available at /health.
+
+## Deployment Notes
+
+- The backend uses Socket.IO with Redis for shared room state.
+- The frontend is designed to work with a deployed backend URL, but can be pointed at a local one during development.
