@@ -1,0 +1,16 @@
+{
+  "name": "chat-app",
+  "private": true,
+  "packageManager": "npm@11.17.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "turbo": "^2.10.5"
+  }
+}

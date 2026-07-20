@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import JoinScreen from './components/JoinScreen';
 import ChatRoom from './components/ChatRoom';
 import { socket } from './socket';
-import type { ChatMessage, FeedItem } from './types';
+import type { ChatMessage } from '@chat-app/types';
+import type { FeedItem } from './types';
 import { ThemeProvider } from './ThemeContext';
 
 type Screen = 'join' | 'chat';

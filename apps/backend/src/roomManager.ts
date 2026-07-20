@@ -5,7 +5,7 @@ import {
   ServerToClientEvent,
   ClientToServerEvent,
   ChatMessage,
-} from "./types";
+} from "@chat-app/types";
 
 const ROOM_TTL = 15;
 const MAX_HISTORY = 100;

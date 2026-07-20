@@ -1,7 +1,7 @@
 import express from "express";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import { ServerToClientEvent, ClientToServerEvent, ChatMessage } from "./types";
+import { ServerToClientEvent, ClientToServerEvent, ChatMessage } from "@chat-app/types";
 import { RoomManager } from "./roomManager.js";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { redisClient, redisAdapter } from "./redis.js";

@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client";
-import type { ClientToServerEvent, ServerToClientEvent } from "./types";
+import type { ClientToServerEvent, ServerToClientEvent } from "@chat-app/types";
 
 const SERVER_URL = "https://chat-app-w182.onrender.com";
 
